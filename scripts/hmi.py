@@ -137,10 +137,9 @@ class MainWindow(QWidget):
         layout.addWidget(self.label1)
         layout.addWidget(self.label2)
 
-        self.shapes = [ShapeWidget()]
+        self.shape = ShapeWidget()
         shape_layout = QHBoxLayout()
-        for sw in self.shapes:
-            shape_layout.addWidget(sw)
+        shape_layout.addWidget(self.shape)
         layout.addLayout(shape_layout)
 
         self.setLayout(layout)
@@ -164,16 +163,19 @@ class MainWindow(QWidget):
             self.wms_req_label.setText(wms_req)
             self.cell_res_label.setText(bin_req)
 
-        for shape in self.shapes:
             if self.latest_light_stack_msg == 0:
-                shape.shape = 'circle'
+                self.shape.shape = 'circle'
             elif self.latest_light_stack_msg == 1:
-                shape.shape = 'square'
+                self.shape.shape = 'square'
             elif self.latest_light_stack_msg == -1:
-                shape.shape = 'triangle'
+                self.shape.shape = 'triangle'
             elif self.latest_light_stack_msg == 2:
-                shape.shape = 'star'
-            shape.update()
+                self.shape.shape = 'star'
+            self.shape.update()
+
+        else:
+            self.shape.shape = 'star'
+            self.shape.update()
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
