@@ -3,7 +3,7 @@
 import time
 import threading
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request
 
 CELL_URL = "http://localhost:8080/pick"
 CELL_MSG = {

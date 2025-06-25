@@ -3,7 +3,7 @@ import rclpy
 import threading
 import json
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from rclpy.node import Node
 from std_msgs.msg import String, Bool
 
