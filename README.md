@@ -34,7 +34,7 @@ A mini-project that simulates control software for a **Robotic Bin Picking Cell*
                                      +--------------+
                                      | Qt HMI (GUI) |
                                      +--------------+
-
+```
 ## 🚀 Installation
 
 ### 📦 Requirements
@@ -62,10 +62,11 @@ sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 sudo apt update
 sudo apt install ros-humble-desktop python3-colcon-common-extensions
-
+```
 # Source ROS 2 in your shell
-echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+```echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 source ~/.bashrc
+```
 
 ### 🐍 2. Install Python Dependencies
 
@@ -78,6 +79,7 @@ source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
 ### 📁 3. Build and Source ROS 2 Workspace
 
@@ -85,3 +87,4 @@ pip install -r requirements.txt
 cd ~/ros2_ws
 colcon build
 source install/setup.bash
+```
