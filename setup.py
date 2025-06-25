@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'bin_picking_challenge'
+package_name = 'BinPickingCellControl'
 
 setup(
     name=package_name,
@@ -23,9 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'barcode_scanner = bin_picking_challenge.barcode_scanner:main',
-            'door_handle = bin_picking_challenge.door_handle:main',
-            'emergency_button = bin_picking_challenge.emergency_button:main',
+            'barcode_scanner = BinPickingCellControl.barcode_scanner:main',
+            'door_handle = BinPickingCellControl.door_handle:main',
+            'emergency_button = BinPickingCellControl.emergency_button:main',
         ],
     },
 )

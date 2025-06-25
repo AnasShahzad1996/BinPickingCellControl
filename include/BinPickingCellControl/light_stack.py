@@ -47,11 +47,11 @@ class LightStackPublisher(Node):
         if self.latest_estop_msg == False:
             msg.data = -1
         elif self.latest_door_handle_msg == False:
-            msg.data = 0
+            msg.data = 1
         elif len(self.latest_request_msg.split("|")[0]) == 0:
             msg.data = 2
         else:
-            msg.data = 1
+            msg.data = 0
         self.publisher_.publish(msg)
         self.get_logger().info(f'Publishing: {msg.data}')
     

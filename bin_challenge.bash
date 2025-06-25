@@ -12,7 +12,7 @@ source ~/ros2_ws/install/setup.bash
 for script in "${PY_SCRIPTS[@]}"
 do
   echo "Starting $script ..."
-  ros2 run bin_picking_challenge "$script" &
+  ros2 run BinPickingCellControl "$script" &
 done
 
 echo "All scripts started in background."

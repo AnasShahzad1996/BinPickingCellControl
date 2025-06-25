@@ -3,10 +3,10 @@
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 
-from bin_picking_challenge.barcode_scanner import BarcodePublisherWithService
-from bin_picking_challenge.door_handle import DoorHandlePublisher
-from bin_picking_challenge.emergency_button import EmergencyButtonPublisher
-from bin_picking_challenge.light_stack import LightStackPublisher
+from BinPickingCellControl.barcode_scanner import BarcodePublisherWithService
+from BinPickingCellControl.door_handle import DoorHandlePublisher
+from BinPickingCellControl.emergency_button import EmergencyButtonPublisher
+from BinPickingCellControl.light_stack import LightStackPublisher
 
 def main():
     rclpy.init()
