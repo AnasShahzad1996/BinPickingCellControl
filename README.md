@@ -88,3 +88,13 @@ cd ~/ros2_ws
 colcon build
 source install/setup.bash
 ```
+
+
+# 🚀 Run code
+```
+# In four separate terminals execute the following commands:
+ros2 run BinPickingCellControl cell_sensors.py
+ros2 run BinPickingCellControl client.py
+ros2 run BinPickingCellControl server.py
+ros2 run BinPickingCellControl hmi.py
+```
