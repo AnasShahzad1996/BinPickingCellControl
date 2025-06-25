@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 
-import sys
 import math
-import rclpy
+import sys
 import threading
-from std_msgs.msg import Bool, String, Int32
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QTextEdit
-)
-from PyQt5.QtGui import QPainter, QBrush, QColor, QPolygon
-from PyQt5.QtCore import Qt, QTimer, QPoint
+
+import rclpy
+from PyQt5.QtCore import QPoint, Qt, QTimer
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPolygon
+from PyQt5.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+                             QLineEdit, QTextEdit, QVBoxLayout, QWidget)
+from std_msgs.msg import Bool, Int32, String
+
 
 class ShapeWidget(QFrame):
     def __init__(self):
         super().__init__()
-        self.shape = 'circle'  # can be: 'circle', 'square', 'triangle'
+        self.shape = "circle"  # can be: 'circle', 'square', 'triangle'
         self.setMinimumHeight(120)
         self.setMinimumWidth(120)
 
@@ -24,22 +25,24 @@ class ShapeWidget(QFrame):
 
         rect = self.rect().adjusted(10, 10, -10, -10)
 
-        if self.shape == 'circle':
-            painter.setBrush(QBrush(QColor('green')))
+        if self.shape == "circle":
+            painter.setBrush(QBrush(QColor("green")))
             painter.drawEllipse(rect)
-        elif self.shape == 'square':
-            painter.setBrush(QBrush(QColor('yellow')))
+        elif self.shape == "square":
+            painter.setBrush(QBrush(QColor("yellow")))
             painter.drawRect(rect)
-        elif self.shape == 'triangle':
-            painter.setBrush(QBrush(QColor('red')))
-            points = QPolygon([
-                QPoint(rect.center().x(), rect.top()),
-                QPoint(rect.left(), rect.bottom()),
-                QPoint(rect.right(), rect.bottom())
-            ])
-            painter.drawPolygon(points)        
-        elif self.shape == 'star':
-            painter.setBrush(QBrush(QColor('blue')))
+        elif self.shape == "triangle":
+            painter.setBrush(QBrush(QColor("red")))
+            points = QPolygon(
+                [
+                    QPoint(rect.center().x(), rect.top()),
+                    QPoint(rect.left(), rect.bottom()),
+                    QPoint(rect.right(), rect.bottom()),
+                ]
+            )
+            painter.drawPolygon(points)
+        elif self.shape == "star":
+            painter.setBrush(QBrush(QColor("blue")))
 
             cx = rect.center().x()
             cy = rect.center().y()
@@ -56,10 +59,24 @@ class ShapeWidget(QFrame):
                 star_points.append(QPoint(x, y))
             painter.drawPolygon(QPolygon(star_points))
 
+
 class MainWindow(QWidget):
+    """HMI that allows user to see the status of
+        1. e-stop
+        2. door-handle
+        3. light stack
+        4. wms request
+        5. picking cell response
+
+    Green shows that the cell is picking
+    Yellow shows that the door is open
+    Red shows that the e-stop is pressed
+    Blue shows that the cell is not online
+    """
+
     def __init__(self):
         super().__init__()
-        
+
         # Set GUI geometry
         self.setWindowTitle("Robot Cell HMI")
         self.resize(1000, 600)
@@ -69,13 +86,26 @@ class MainWindow(QWidget):
         self.move(qr.topLeft())
 
         rclpy.init(args=None)
-        self.ros_node = rclpy.create_node('hmi_node')
+        self.ros_node = rclpy.create_node("hmi_node")
 
-        self.latest_pick_cell_msg, self.latest_estop_msg, self.latest_door_handle_msg, self.latest_light_stack_msg = "", "", "", ""
-        self.pick_cell_sub = self.ros_node.create_subscription(String, 'cell_state', self.pick_cell_callback, 10)
-        self.e_stop_sub = self.ros_node.create_subscription(Bool, 'e_stop_pressed', self.estop_callback, 10)
-        self.door_handle_sub = self.ros_node.create_subscription(Bool, 'door_handle', self.door_handle_callback, 10)
-        self.light_stack_sub = self.ros_node.create_subscription(Int32, 'light_stack', self.light_stack_callback, 10)
+        (
+            self.latest_pick_cell_msg,
+            self.latest_estop_msg,
+            self.latest_door_handle_msg,
+            self.latest_light_stack_msg,
+        ) = "", "", "", ""
+        self.pick_cell_sub = self.ros_node.create_subscription(
+            String, "cell_state", self.pick_cell_callback, 10
+        )
+        self.e_stop_sub = self.ros_node.create_subscription(
+            Bool, "e_stop_pressed", self.estop_callback, 10
+        )
+        self.door_handle_sub = self.ros_node.create_subscription(
+            Bool, "door_handle", self.door_handle_callback, 10
+        )
+        self.light_stack_sub = self.ros_node.create_subscription(
+            Int32, "light_stack", self.light_stack_callback, 10
+        )
 
         # ROS spinning thread
         self._ros_spin_thread = threading.Thread(target=self._ros_spin)
@@ -92,22 +122,21 @@ class MainWindow(QWidget):
                 rclpy.spin_once(self.ros_node, timeout_sec=0.1)
         except Exception as e:
             print(f"[ROS] Spin error: {e}")
-        
+
     def pick_cell_callback(self, msg):
         self.latest_pick_cell_msg = msg.data
-    
+
     def estop_callback(self, msg):
         self.latest_estop_msg = msg.data
-        
+
     def door_handle_callback(self, msg):
         self.latest_door_handle_msg = msg.data
-        
+
     def light_stack_callback(self, msg):
         self.latest_light_stack_msg = msg.data
 
     def init_ui(self):
-        """Adding widgets to display information
-        """
+        """Adding widgets to display information"""
         layout = QVBoxLayout()
 
         input_layout = QVBoxLayout()
@@ -128,7 +157,7 @@ class MainWindow(QWidget):
         input_layout.addLayout(wms_layout)
         input_layout.addLayout(cell_layout)
         layout.addLayout(input_layout)
-        
+
         self.label1 = QLabel("E-stop")
         self.label2 = QLabel("Door Handle")
         for label in [self.label1, self.label2]:
@@ -150,34 +179,38 @@ class MainWindow(QWidget):
         self.timer.start(500)
 
     def update_ui(self):
-        """Updates UI with values read from ros-messages
-        """
-        color1 = 'white' if self.latest_estop_msg else 'red'
-        color2 = 'white' if self.latest_door_handle_msg else 'red'
-        self.label1.setStyleSheet(f"background-color: {color1}; color: black; padding: 10px;")
-        self.label2.setStyleSheet(f"background-color: {color2}; color: black; padding: 10px;")
-        
-        if len(self.latest_pick_cell_msg) > 0 :
+        """Updates UI with values read from ros-messages"""
+        color1 = "white" if self.latest_estop_msg else "red"
+        color2 = "white" if self.latest_door_handle_msg else "red"
+        self.label1.setStyleSheet(
+            f"background-color: {color1}; color: black; padding: 10px;"
+        )
+        self.label2.setStyleSheet(
+            f"background-color: {color2}; color: black; padding: 10px;"
+        )
+
+        if len(self.latest_pick_cell_msg) > 0:
             wms_req = self.latest_pick_cell_msg.split("|")[0]
             bin_req = self.latest_pick_cell_msg.split("|")[1]
             self.wms_req_label.setText(wms_req)
             self.cell_res_label.setText(bin_req)
 
             if self.latest_light_stack_msg == 0:
-                self.shape.shape = 'circle'
+                self.shape.shape = "circle"
             elif self.latest_light_stack_msg == 1:
-                self.shape.shape = 'square'
+                self.shape.shape = "square"
             elif self.latest_light_stack_msg == -1:
-                self.shape.shape = 'triangle'
+                self.shape.shape = "triangle"
             elif self.latest_light_stack_msg == 2:
-                self.shape.shape = 'star'
+                self.shape.shape = "star"
             self.shape.update()
 
         else:
-            self.shape.shape = 'star'
+            self.shape.shape = "star"
             self.shape.update()
-        
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()

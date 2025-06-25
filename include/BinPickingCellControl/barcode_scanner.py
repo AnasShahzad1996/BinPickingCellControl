@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
+import random
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
-import random
 
 
 class BarcodePublisherWithService(Node):
-    def __init__(self):
-        super().__init__('barcode_publisher_with_service')
+    """
+    Publishes a random array of 5 barcodes and exposes a rosservice as well
+    """
 
-        self.publisher_ = self.create_publisher(String, 'barcode', 10)
-        self.srv = self.create_service(Trigger, 'get_latest_barcode', self.handle_get_latest_barcode)
+    def __init__(self):
+        super().__init__("barcode_publisher_with_service")
+
+        self.publisher_ = self.create_publisher(String, "barcode", 10)
+        self.srv = self.create_service(
+            Trigger, "get_latest_barcode", self.handle_get_latest_barcode
+        )
 
         self.barcode_history = []  # Use a simple list
 
@@ -21,7 +28,7 @@ class BarcodePublisherWithService(Node):
 
     def timer_callback(self):
         # Generate random 5-digit barcode as string
-        barcode = ''.join(str(random.randint(0, 9)) for _ in range(5))
+        barcode = "".join(str(random.randint(0, 9)) for _ in range(5))
 
         # Keep only the last 5 barcodes
         self.barcode_history.append(barcode)
@@ -30,7 +37,7 @@ class BarcodePublisherWithService(Node):
 
         # Publish the list as a comma-separated string
         msg = String()
-        msg.data = ','.join(self.barcode_history)
+        msg.data = ",".join(self.barcode_history)
         self.publisher_.publish(msg)
 
         self.get_logger().info(f"Published barcodes: {self.barcode_history}")
@@ -43,7 +50,9 @@ class BarcodePublisherWithService(Node):
             latest_barcode = self.barcode_history[-1]
             response.success = True
             response.message = latest_barcode
-            self.get_logger().info(f"Service request: returning latest barcode {latest_barcode}")
+            self.get_logger().info(
+                f"Service request: returning latest barcode {latest_barcode}"
+            )
         return response
 
 
@@ -60,5 +69,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
